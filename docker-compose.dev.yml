@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: aqarx-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: aqarx
+      POSTGRES_PASSWORD: aqarxpass
+      POSTGRES_DB: aqarx
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  ai:
+    image: aqarx-ai:latest
+    container_name: aqarx-ai
+    restart: unless-stopped
+    environment:
+      LLM_PROVIDER: mock
+    ports:
+      - "8000:8000"
+
+  backend:
+    image: aqarx-backend:latest
+    container_name: aqarx-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - ai
+    environment:
+      DATABASE_URL: postgresql://aqarx:aqarxpass@postgres:5432/aqarx
+      JWT_SECRET: dev_secret_change_later
+      FRONTEND_URL: http://localhost:3000
+      ADMIN_FRONTEND_URL: http://localhost:3002
+      AI_SERVICE_URL: http://ai:8000
+    ports:
+      - "3001:3001"
+
+  frontend:
+    image: aqarx-frontend:latest
+    container_name: aqarx-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001/api
+    ports:
+      - "3000:3000"
+
+  admin:
+    image: aqarx-admin:latest
+    container_name: aqarx-admin
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001/api
+    ports:
+      - "3002:3002"
+
+volumes:
+  postgres_data:
