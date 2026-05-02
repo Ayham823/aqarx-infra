@@ -54,6 +54,9 @@ services:
     build:
       context: ../real-estate-ui
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:3001/api
+        NEXT_PUBLIC_BROWSER_API_URL: http://localhost:3001/api
     image: aqarx-frontend:latest
     container_name: aqarx-frontend
     restart: unless-stopped
@@ -61,6 +64,7 @@ services:
       - backend
     environment:
       NEXT_PUBLIC_API_URL: http://backend:3001/api
+      NEXT_PUBLIC_BROWSER_API_URL: http://localhost:3001/api
     ports:
       - "3000:3000"
 
@@ -68,6 +72,9 @@ services:
     build:
       context: ../real-estate-ui
       dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:3001/api
+        NEXT_PUBLIC_BROWSER_API_URL: http://localhost:3001/api
     image: aqarx-admin:latest
     container_name: aqarx-admin
     restart: unless-stopped
@@ -75,6 +82,7 @@ services:
       - backend
     environment:
       NEXT_PUBLIC_API_URL: http://backend:3001/api
+      NEXT_PUBLIC_BROWSER_API_URL: http://localhost:3001/api
     ports:
       - "3002:3002"
 
