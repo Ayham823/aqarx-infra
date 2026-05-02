@@ -14,7 +14,7 @@ services:
 
   ai:
     build:
-      context: /mnt/c/Users/Win11/real-estate-backend
+      context: ../real-estate-ai
       dockerfile: Dockerfile
     image: aqarx-ai:latest
     container_name: aqarx-ai
@@ -26,7 +26,7 @@ services:
 
   backend:
     build:
-      context: ../real-estate-backend
+      context: /mnt/c/Users/Win11/real-estate-backend
       dockerfile: Dockerfile
     image: aqarx-backend:latest
     container_name: aqarx-backend
