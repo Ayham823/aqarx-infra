@@ -1,0 +1,11 @@
+{
+  "name": "aqarx-infra",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke": "node scripts/smoke-api.mjs && node scripts/smoke-ui.mjs",
+    "smoke:api": "node scripts/smoke-api.mjs",
+    "smoke:ui": "node scripts/smoke-ui.mjs"
+  }
+}
