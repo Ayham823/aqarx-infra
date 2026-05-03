@@ -2,7 +2,7 @@
 set -euo pipefail
 
 if [ "${1:-}" = "" ]; then
-  echo "Usage: ./scripts/restore-postgres.sh backups/aqarx-YYYYMMDD-HHMMSS.sql.gz"
+  echo "Usage: ./scripts/restore-postgres.sh backups/qivro-YYYYMMDD-HHMMSS.sql.gz"
   exit 1
 fi
 
@@ -21,9 +21,9 @@ if [ -f ".env.production" ]; then
   set +a
 fi
 
-POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-aqarx-postgres}"
-POSTGRES_USER="${POSTGRES_USER:-aqarx}"
-POSTGRES_DB="${POSTGRES_DB:-aqarx}"
+POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-qivro-postgres}"
+POSTGRES_USER="${POSTGRES_USER:-qivro}"
+POSTGRES_DB="${POSTGRES_DB:-qivro}"
 BACKUP_FILE="$1"
 
 if [ ! -f "$BACKUP_FILE" ]; then

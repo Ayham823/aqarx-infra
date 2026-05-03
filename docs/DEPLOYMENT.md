@@ -79,8 +79,8 @@ docker compose -f docker-compose.prod.yml --env-file .env.production run --rm ce
 After certificates are created, enable the HTTPS template:
 
 ```bash
-cp nginx/ssl-templates/aqarx.conf.template nginx/templates/aqarx.conf.template
-rm -f nginx/templates/aqarx-http.conf.template
+cp nginx/ssl-templates/qivro.conf.template nginx/templates/qivro.conf.template
+rm -f nginx/templates/qivro-http.conf.template
 docker compose -f docker-compose.prod.yml --env-file .env.production restart nginx
 ```
 
@@ -117,7 +117,7 @@ bash scripts/backup-postgres.sh
 Restore needs explicit confirmation:
 
 ```bash
-CONFIRM_RESTORE=yes bash scripts/restore-postgres.sh backups/aqarx-YYYYMMDD-HHMMSS.sql.gz
+CONFIRM_RESTORE=yes bash scripts/restore-postgres.sh backups/qivro-YYYYMMDD-HHMMSS.sql.gz
 ```
 
 ## 9. Logs

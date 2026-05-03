@@ -1,6 +1,6 @@
-# AqarX Infra
+# Qivro Infra
 
-Infrastructure workspace for running AqarX locally and preparing production deployment.
+Infrastructure workspace for running Qivro locally and preparing production deployment.
 
 ## Services
 
@@ -44,7 +44,7 @@ API smoke checks auth, listings, views, favorites, leads, reports, trust, saved 
 
 UI smoke checks public pages on `3000`, admin pages on `3002`, and confirms public `/admin/analytics` returns `404`.
 
-The API smoke runner sends `x-aqarx-test-mode: true`, so smoke-test listing notifications and emails are routed to admins only.
+The API smoke runner sends `x-qivro-test-mode: true`, so smoke-test listing notifications and emails are routed to admins only.
 
 ## Production Files
 
@@ -52,8 +52,8 @@ The API smoke runner sends `x-aqarx-test-mode: true`, so smoke-test listing noti
 | --- | --- |
 | `docker-compose.prod.yml` | Production-style Docker stack |
 | `.env.production.example` | Server-only env template |
-| `nginx/templates/aqarx-http.conf.template` | First HTTP reverse proxy template |
-| `nginx/ssl-templates/aqarx.conf.template` | HTTPS reverse proxy template after Certbot |
+| `nginx/templates/qivro-http.conf.template` | First HTTP reverse proxy template |
+| `nginx/ssl-templates/qivro.conf.template` | HTTPS reverse proxy template after Certbot |
 | `scripts/deploy.sh` | Pull, build, and update production services |
 | `scripts/backup-postgres.sh` | Manual DB backup |
 | `scripts/restore-postgres.sh` | Confirmed DB restore |

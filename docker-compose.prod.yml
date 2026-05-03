@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: aqarx-postgres
+    container_name: qivro-postgres
     restart: unless-stopped
     env_file:
       - .env.production
@@ -12,28 +12,28 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   ai:
     build:
       context: ../real-estate-ai
       dockerfile: Dockerfile
-    image: aqarx-ai:latest
-    container_name: aqarx-ai
+    image: qivro-ai:latest
+    container_name: qivro-ai
     restart: unless-stopped
     env_file:
       - .env.production
     expose:
       - "8000"
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   backend:
     build:
       context: /mnt/c/Users/Win11/real-estate-backend
       dockerfile: Dockerfile
-    image: aqarx-backend:latest
-    container_name: aqarx-backend
+    image: qivro-backend:latest
+    container_name: qivro-backend
     restart: unless-stopped
     depends_on:
       - postgres
@@ -50,7 +50,7 @@ services:
     expose:
       - "3001"
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   frontend:
     build:
@@ -62,8 +62,8 @@ services:
         NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID}
         NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
         NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
-    image: aqarx-frontend:latest
-    container_name: aqarx-frontend
+    image: qivro-frontend:latest
+    container_name: qivro-frontend
     restart: unless-stopped
     depends_on:
       - backend
@@ -72,7 +72,7 @@ services:
     expose:
       - "3000"
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   admin:
     build:
@@ -81,8 +81,8 @@ services:
       args:
         NEXT_PUBLIC_API_URL: http://backend:3001/api
         NEXT_PUBLIC_BROWSER_API_URL: ${NEXT_PUBLIC_BROWSER_API_URL}
-    image: aqarx-admin:latest
-    container_name: aqarx-admin
+    image: qivro-admin:latest
+    container_name: qivro-admin
     restart: unless-stopped
     depends_on:
       - backend
@@ -91,11 +91,11 @@ services:
     expose:
       - "3002"
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: aqarx-nginx
+    container_name: qivro-nginx
     restart: unless-stopped
     depends_on:
       - frontend
@@ -112,11 +112,11 @@ services:
       - certbot_www:/var/www/certbot
       - certbot_conf:/etc/letsencrypt
     networks:
-      - aqarx_internal
+      - qivro_internal
 
   certbot:
     image: certbot/certbot
-    container_name: aqarx-certbot
+    container_name: qivro-certbot
     profiles:
       - ssl
     volumes:
@@ -125,7 +125,7 @@ services:
 
   backup:
     image: postgres:16
-    container_name: aqarx-db-backup
+    container_name: qivro-db-backup
     restart: unless-stopped
     depends_on:
       - postgres
@@ -136,15 +136,15 @@ services:
     command: >
       sh -c 'while true; do
         ts=$$(date +%Y%m%d-%H%M%S);
-        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h postgres -U $$POSTGRES_USER $$POSTGRES_DB | gzip > /backups/aqarx-$$ts.sql.gz;
-        find /backups -name "aqarx-*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-14} -delete;
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h postgres -U $$POSTGRES_USER $$POSTGRES_DB | gzip > /backups/qivro-$$ts.sql.gz;
+        find /backups -name "qivro-*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-14} -delete;
         sleep $${BACKUP_INTERVAL_SECONDS:-86400};
       done'
     networks:
-      - aqarx_internal
+      - qivro_internal
 
 networks:
-  aqarx_internal:
+  qivro_internal:
     driver: bridge
 
 volumes:

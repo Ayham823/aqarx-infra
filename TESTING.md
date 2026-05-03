@@ -1,4 +1,4 @@
-# AqarX E2E And Smoke Testing
+# Qivro E2E And Smoke Testing
 
 These tests run against the real local Docker stack. Use them to verify that
 backend, frontend, admin, AI, and Postgres work together.
@@ -62,7 +62,7 @@ FRONTEND_URL=http://localhost:3000 ADMIN_URL=http://localhost:3002 npm run smoke
 The API smoke runner sends this header by default:
 
 ```http
-x-aqarx-test-mode: true
+x-qivro-test-mode: true
 ```
 
 Backend notifications created by smoke-test listings are routed to admins only,

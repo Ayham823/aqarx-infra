@@ -23,7 +23,7 @@ async function request(path, options = {}) {
   const headers = {
     "Content-Type": "application/json",
     "x-session-id": `smoke-${runId}`,
-    ...(TEST_MODE ? { "x-aqarx-test-mode": "true" } : {}),
+    ...(TEST_MODE ? { "x-qivro-test-mode": "true" } : {}),
     ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
     ...(options.headers || {}),
   }

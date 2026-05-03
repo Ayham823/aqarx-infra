@@ -11,18 +11,18 @@ if [ -f ".env.production" ]; then
   set +a
 fi
 
-POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-aqarx-postgres}"
-POSTGRES_USER="${POSTGRES_USER:-aqarx}"
-POSTGRES_DB="${POSTGRES_DB:-aqarx}"
+POSTGRES_CONTAINER="${POSTGRES_CONTAINER:-qivro-postgres}"
+POSTGRES_USER="${POSTGRES_USER:-qivro}"
+POSTGRES_DB="${POSTGRES_DB:-qivro}"
 BACKUP_DIR="${BACKUP_DIR:-$ROOT_DIR/backups}"
 BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-14}"
 
 mkdir -p "$BACKUP_DIR"
-file="$BACKUP_DIR/aqarx-$(date +%Y%m%d-%H%M%S).sql.gz"
+file="$BACKUP_DIR/qivro-$(date +%Y%m%d-%H%M%S).sql.gz"
 
 echo "Writing backup to $file"
 docker exec -e PGPASSWORD="${POSTGRES_PASSWORD:-}" "$POSTGRES_CONTAINER" pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > "$file"
 
-find "$BACKUP_DIR" -name "aqarx-*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" -delete
+find "$BACKUP_DIR" -name "qivro-*.sql.gz" -mtime +"$BACKUP_RETENTION_DAYS" -delete
 
 echo "Backup complete: $file"

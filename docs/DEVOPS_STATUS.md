@@ -18,7 +18,7 @@ This file explains what exists today and what still needs production setup.
 
 - `docker-compose.prod.yml` for production-style service layout.
 - `.env.production.example` for server-only secrets and domain settings.
-- Nginx template in `nginx/templates/aqarx.conf.template`.
+- Nginx template in `nginx/templates/qivro.conf.template`.
 - API rate limiting at Nginx level.
 - Automatic Postgres backup service in production compose.
 - Manual backup and restore scripts.
