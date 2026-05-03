@@ -1,10 +1,10 @@
 # AqarX Infra
 
-Local Docker Compose stack for AqarX.
+Infrastructure workspace for running AqarX locally and preparing production deployment.
 
 ## Services
 
-| Service | URL |
+| Service | Local URL |
 | --- | --- |
 | Public frontend | `http://localhost:3000` |
 | Backend API | `http://localhost:3001/api` |
@@ -12,69 +12,55 @@ Local Docker Compose stack for AqarX.
 | AI service | `http://localhost:8000` |
 | Postgres | `localhost:5434` |
 
-## Start The Full Stack
+## Local Development
 
 ```bash
 cd ~/aqarx-infra
 docker compose -f docker-compose.dev.yml up -d --build
 ```
 
-## Stop The Stack
+Stop local stack:
 
 ```bash
-cd ~/aqarx-infra
 docker compose -f docker-compose.dev.yml down
 ```
 
-## Full Smoke Test
+## Smoke Tests
 
-Run this before deploy, after big changes, or when you want to verify the full
-system:
+Run this before deploy, after big changes, or when you want to verify the full system:
 
 ```bash
-cd ~/aqarx-infra
 npm run smoke
 ```
 
-## Split Smoke Commands
+Split commands:
 
 ```bash
 npm run smoke:api
 npm run smoke:ui
 ```
 
-## What Smoke Tests Check
+API smoke checks auth, listings, views, favorites, leads, reports, trust, saved searches, messaging, and payments.
 
-API smoke checks:
+UI smoke checks public pages on `3000`, admin pages on `3002`, and confirms public `/admin/analytics` returns `404`.
 
-- register/login
-- listings list/create/delete
-- listing view tracking
-- favorites
-- leads
-- reports
-- trust summary
-- saved searches
-- messaging
-- payment checkout and confirmation
+The API smoke runner sends `x-aqarx-test-mode: true`, so smoke-test listing notifications and emails are routed to admins only.
 
-UI smoke checks:
+## Production Files
 
-- public frontend pages on `3000`
-- internal admin pages on `3002`
-- public `/admin/analytics` returns `404`
+| File | Purpose |
+| --- | --- |
+| `docker-compose.prod.yml` | Production-style Docker stack |
+| `.env.production.example` | Server-only env template |
+| `nginx/templates/aqarx-http.conf.template` | First HTTP reverse proxy template |
+| `nginx/ssl-templates/aqarx.conf.template` | HTTPS reverse proxy template after Certbot |
+| `scripts/deploy.sh` | Pull, build, and update production services |
+| `scripts/backup-postgres.sh` | Manual DB backup |
+| `scripts/restore-postgres.sh` | Confirmed DB restore |
+| `scripts/server-bootstrap.sh` | First-time Ubuntu server setup |
 
-## Test Mode Safety
+## Documentation
 
-The API smoke runner sends:
-
-```http
-x-aqarx-test-mode: true
-```
-
-Smoke-test listing notifications and emails are routed to admins only, not to
-regular users.
-
-## More Testing Details
-
-See [TESTING.md](./TESTING.md).
+- [Testing](./TESTING.md)
+- [DevOps Status](./docs/DEVOPS_STATUS.md)
+- [Deployment Guide](./docs/DEPLOYMENT.md)

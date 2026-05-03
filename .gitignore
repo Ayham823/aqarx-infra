@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+!.env.production.example
+backups/*
+!backups/.gitkeep
+certbot/conf/*
+certbot/www/*
+nginx/logs/*
+node_modules/
+.DS_Store

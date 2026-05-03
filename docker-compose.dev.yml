@@ -39,6 +39,7 @@ services:
       JWT_SECRET: dev_secret_change_later
       FRONTEND_URL: http://localhost:3000
       ADMIN_FRONTEND_URL: http://localhost:3002
+      CORS_ORIGINS: http://localhost:3000,http://localhost:3002
       AI_SERVICE_URL: http://ai:8000
       EMAIL_PROVIDER: ${EMAIL_PROVIDER:-console}
       EMAIL_FROM: "${EMAIL_FROM:-AqarX <no-reply@aqarx.local>}"

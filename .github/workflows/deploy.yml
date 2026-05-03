@@ -3,20 +3,22 @@ name: Deploy to AWS
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: SSH into server and deploy
+      - name: Deploy on EC2 through SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
         with:
-          host: 98.91.219.223
-          username: ubuntu
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_KEY }}
+          envs: DEPLOY_PATH
           script: |
-            cd ~/aqarx-infra
-            git pull
-            docker-compose -f docker-compose.dev.yml down
-            docker-compose -f docker-compose.dev.yml up -d --build
+            cd "${DEPLOY_PATH:-$HOME/aqarx-infra}"
+            bash scripts/deploy.sh

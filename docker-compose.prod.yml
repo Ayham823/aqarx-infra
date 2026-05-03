@@ -1,0 +1,154 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: aqarx-postgres
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - aqarx_internal
+
+  ai:
+    build:
+      context: ../real-estate-ai
+      dockerfile: Dockerfile
+    image: aqarx-ai:latest
+    container_name: aqarx-ai
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    expose:
+      - "8000"
+    networks:
+      - aqarx_internal
+
+  backend:
+    build:
+      context: /mnt/c/Users/Win11/real-estate-backend
+      dockerfile: Dockerfile
+    image: aqarx-backend:latest
+    container_name: aqarx-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - ai
+    env_file:
+      - .env.production
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: ${FRONTEND_URL}
+      ADMIN_FRONTEND_URL: ${ADMIN_FRONTEND_URL}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      AI_SERVICE_URL: http://ai:8000
+    expose:
+      - "3001"
+    networks:
+      - aqarx_internal
+
+  frontend:
+    build:
+      context: ../real-estate-ui
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:3001/api
+        NEXT_PUBLIC_BROWSER_API_URL: ${NEXT_PUBLIC_BROWSER_API_URL}
+        NEXT_PUBLIC_GA_MEASUREMENT_ID: ${NEXT_PUBLIC_GA_MEASUREMENT_ID}
+        NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
+        NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
+    image: aqarx-frontend:latest
+    container_name: aqarx-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    env_file:
+      - .env.production
+    expose:
+      - "3000"
+    networks:
+      - aqarx_internal
+
+  admin:
+    build:
+      context: ../real-estate-ui
+      dockerfile: apps/admin/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:3001/api
+        NEXT_PUBLIC_BROWSER_API_URL: ${NEXT_PUBLIC_BROWSER_API_URL}
+    image: aqarx-admin:latest
+    container_name: aqarx-admin
+    restart: unless-stopped
+    depends_on:
+      - backend
+    env_file:
+      - .env.production
+    expose:
+      - "3002"
+    networks:
+      - aqarx_internal
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: aqarx-nginx
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - admin
+      - backend
+    env_file:
+      - .env.production
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - nginx_logs:/var/log/nginx
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    networks:
+      - aqarx_internal
+
+  certbot:
+    image: certbot/certbot
+    container_name: aqarx-certbot
+    profiles:
+      - ssl
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+
+  backup:
+    image: postgres:16
+    container_name: aqarx-db-backup
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    env_file:
+      - .env.production
+    volumes:
+      - ./backups:/backups
+    command: >
+      sh -c 'while true; do
+        ts=$$(date +%Y%m%d-%H%M%S);
+        PGPASSWORD=$$POSTGRES_PASSWORD pg_dump -h postgres -U $$POSTGRES_USER $$POSTGRES_DB | gzip > /backups/aqarx-$$ts.sql.gz;
+        find /backups -name "aqarx-*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-14} -delete;
+        sleep $${BACKUP_INTERVAL_SECONDS:-86400};
+      done'
+    networks:
+      - aqarx_internal
+
+networks:
+  aqarx_internal:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  nginx_logs:
+  certbot_www:
+  certbot_conf:
