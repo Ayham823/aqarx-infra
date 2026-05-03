@@ -30,7 +30,7 @@ services:
 
   backend:
     build:
-      context: /mnt/c/Users/Win11/real-estate-backend
+      context: ../real-estate-backend
       dockerfile: Dockerfile
     image: qivro-backend:latest
     container_name: ${CONTAINER_PREFIX:-qivro}-backend
