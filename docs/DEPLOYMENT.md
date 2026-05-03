@@ -18,6 +18,10 @@ Create production env on the server only:
 
 ```bash
 cd ~/aqarx-infra
+cp .env.staging.example .env.staging
+nano .env.staging
+
+# Later, for production:
 cp .env.production.example .env.production
 nano .env.production
 ```
@@ -51,7 +55,7 @@ The default Nginx template is HTTP-only so the first deploy can start before SSL
 
 ```bash
 cd ~/aqarx-infra
-bash scripts/deploy.sh
+DEPLOY_ENV=staging bash scripts/deploy.sh
 ```
 
 ## 5. HTTPS / Certbot
@@ -89,7 +93,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.production restart ngi
 ```bash
 cd ~/aqarx-infra
 git pull --ff-only
-bash scripts/deploy.sh
+DEPLOY_ENV=staging bash scripts/deploy.sh
 ```
 
 ## 7. Auto Deploy
@@ -103,7 +107,7 @@ SSH_KEY
 DEPLOY_PATH
 ```
 
-Then pushing to `main` triggers deploy.
+Then run the workflow manually and choose `staging` or `production`.
 
 ## 8. Backups
 

@@ -1,10 +1,10 @@
 services:
   postgres:
     image: postgres:16
-    container_name: qivro-postgres
+    container_name: ${CONTAINER_PREFIX:-qivro}-postgres
     restart: unless-stopped
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -19,10 +19,10 @@ services:
       context: ../real-estate-ai
       dockerfile: Dockerfile
     image: qivro-ai:latest
-    container_name: qivro-ai
+    container_name: ${CONTAINER_PREFIX:-qivro}-ai
     restart: unless-stopped
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     expose:
       - "8000"
     networks:
@@ -33,13 +33,13 @@ services:
       context: /mnt/c/Users/Win11/real-estate-backend
       dockerfile: Dockerfile
     image: qivro-backend:latest
-    container_name: qivro-backend
+    container_name: ${CONTAINER_PREFIX:-qivro}-backend
     restart: unless-stopped
     depends_on:
       - postgres
       - ai
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -63,12 +63,12 @@ services:
         NEXT_PUBLIC_POSTHOG_KEY: ${NEXT_PUBLIC_POSTHOG_KEY}
         NEXT_PUBLIC_POSTHOG_HOST: ${NEXT_PUBLIC_POSTHOG_HOST}
     image: qivro-frontend:latest
-    container_name: qivro-frontend
+    container_name: ${CONTAINER_PREFIX:-qivro}-frontend
     restart: unless-stopped
     depends_on:
       - backend
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     expose:
       - "3000"
     networks:
@@ -82,12 +82,12 @@ services:
         NEXT_PUBLIC_API_URL: http://backend:3001/api
         NEXT_PUBLIC_BROWSER_API_URL: ${NEXT_PUBLIC_BROWSER_API_URL}
     image: qivro-admin:latest
-    container_name: qivro-admin
+    container_name: ${CONTAINER_PREFIX:-qivro}-admin
     restart: unless-stopped
     depends_on:
       - backend
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     expose:
       - "3002"
     networks:
@@ -95,14 +95,14 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: qivro-nginx
+    container_name: ${CONTAINER_PREFIX:-qivro}-nginx
     restart: unless-stopped
     depends_on:
       - frontend
       - admin
       - backend
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     ports:
       - "80:80"
       - "443:443"
@@ -116,7 +116,7 @@ services:
 
   certbot:
     image: certbot/certbot
-    container_name: qivro-certbot
+    container_name: ${CONTAINER_PREFIX:-qivro}-certbot
     profiles:
       - ssl
     volumes:
@@ -125,12 +125,12 @@ services:
 
   backup:
     image: postgres:16
-    container_name: qivro-db-backup
+    container_name: ${CONTAINER_PREFIX:-qivro}-db-backup
     restart: unless-stopped
     depends_on:
       - postgres
     env_file:
-      - .env.production
+      - ${ENV_FILE:-.env.production}
     volumes:
       - ./backups:/backups
     command: >

@@ -63,4 +63,5 @@ The API smoke runner sends `x-qivro-test-mode: true`, so smoke-test listing noti
 
 - [Testing](./TESTING.md)
 - [DevOps Status](./docs/DEVOPS_STATUS.md)
+- [Environment Strategy](./docs/ENVIRONMENTS.md)
 - [Deployment Guide](./docs/DEPLOYMENT.md)
