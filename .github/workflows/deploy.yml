@@ -6,7 +6,7 @@ on:
       target:
         description: "Deployment target"
         required: true
-        default: "staging"
+        default: "production"
         type: choice
         options:
           - staging
@@ -40,4 +40,4 @@ jobs:
           envs: DEPLOY_PATH,DEPLOY_ENV
           script: |
             cd "${DEPLOY_PATH:-$HOME/aqarx-infra}"
-            DEPLOY_ENV="${DEPLOY_ENV:-staging}" bash scripts/deploy.sh
+            DEPLOY_ENV="${DEPLOY_ENV:-production}" bash scripts/deploy.sh

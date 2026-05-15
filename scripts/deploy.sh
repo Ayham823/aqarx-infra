@@ -29,8 +29,18 @@ if [ "$BACKUP_BEFORE_DEPLOY" = "true" ] && [ -x "./scripts/backup-postgres.sh" ]
   DEPLOY_ENV="$DEPLOY_ENV" ENV_FILE="$ENV_FILE" COMPOSE_PROJECT_NAME="$COMPOSE_PROJECT_NAME" CONTAINER_PREFIX="$CONTAINER_PREFIX" ./scripts/backup-postgres.sh || echo "Backup skipped or failed; continuing deploy because app may be first-time setup."
 fi
 
-echo "Pulling latest infra repo..."
-git pull --ff-only
+REPOS_ROOT="${REPOS_ROOT:-$HOME}"
+
+echo "Pulling latest application repos..."
+for repo in real-estate-ui real-estate-backend real-estate-ai aqarx-infra; do
+  if [ -d "$REPOS_ROOT/$repo/.git" ]; then
+    echo "Pulling $repo..."
+    git -C "$REPOS_ROOT/$repo" pull --ff-only
+  else
+    echo "Missing repo: $REPOS_ROOT/$repo"
+    exit 1
+  fi
+done
 
 echo "Building $DEPLOY_ENV images..."
 docker compose -p "$COMPOSE_PROJECT_NAME" -f "$COMPOSE_FILE" --env-file "$ENV_FILE" build
